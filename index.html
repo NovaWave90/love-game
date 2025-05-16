@@ -3,38 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>表白小游戏❤</title>
+    <title>❤️ 爱的告白 ❤️</title>
     <style>
         body {
-            background-color: #ffd1dc;
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4);
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
+            overflow: hidden;
         }
         .container {
             text-align: center;
             padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            max-width: 80%;
         }
         .title {
             color: #ff4081;
             font-size: 24px;
             margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
         .btn {
             padding: 15px 30px;
             font-size: 18px;
             margin: 10px;
             border: none;
-            border-radius: 5px;
+            border-radius: 50px;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
         }
         #yesBtn {
             background-color: #ff4081;
             color: white;
+            transform: scale(1.1);
         }
         #noBtn {
             background-color: #9e9e9e;
@@ -47,92 +56,138 @@
             border-radius: 10px;
             margin: 20px auto;
             overflow: hidden;
+            position: relative;
         }
         .progress-bar {
             width: 100%;
             height: 100%;
-            background-color: #ff4081;
-            transition: width 0.3s;
+            background: linear-gradient(45deg, #ff4081, #ff6e7f);
+            transition: width 0.3s ease;
+        }
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            color: #ff4081;
+            pointer-events: none;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(20deg); }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .message {
+            font-size: 18px;
+            color: #ff4081;
+            margin: 20px 0;
+            min-height: 27px;
+        }
+        .firework {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="title">做我女朋友好吗？</h1>
+        <h1 class="title">亲爱的，我想对你说</h1>
+        <div class="message" id="message">你愿意做我的女朋友吗？</div>
         <div class="progress">
             <div class="progress-bar" id="loveProgress"></div>
         </div>
-        <div>
-            <button class="btn" id="yesBtn">好呀</button>
-            <button class="btn" id="noBtn">考虑一下</button>
-        </div>
+        <button class="btn" id="yesBtn">当然愿意</button>
+        <button class="btn" id="noBtn">考虑一下</button>
     </div>
 
     <script>
         let noCount = 0;
         let loveValue = 100;
         const messages = [
-            "再考虑一下~",
-            "人家很喜欢你~",
+            "再考虑一下嘛~",
+            "你是我的唯一 ❤",
+            "我会一直陪着你",
             "你最特别！",
-            "等你哦~",
-            "给个机会吧~"
+            "我真的很喜欢你",
+            "给我一次机会吧",
+            "你是最棒的",
         ];
 
-        const noBtn = document.getElementById('noBtn');
-        const yesBtn = document.getElementById('yesBtn');
-        const progress = document.getElementById('loveProgress');
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '❤';
+            heart.style.left = Math.random() * window.innerWidth + 'px';
+            heart.style.top = window.innerHeight + 'px';
+            document.body.appendChild(heart);
 
-        function updateProgress() {
-            progress.style.width = loveValue + '%';
+            const animation = heart.animate([
+                { transform: `translateY(${window.innerHeight}px)` },
+                { transform: 'translateY(-100%)' }
+            ], {
+                duration: Math.random() * 3000 + 2000,
+                easing: 'linear'
+            });
+
+            animation.onfinish = () => heart.remove();
         }
 
-        noBtn.addEventListener('mouseover', function(e) {
+        function createFirework(x, y) {
+            for (let i = 0; i < 30; i++) {
+                const firework = document.createElement('div');
+                firework.className = 'firework';
+                firework.style.left = x + 'px';
+                firework.style.top = y + 'px';
+                firework.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                document.body.appendChild(firework);
+
+                const angle = (Math.PI * 2 * i) / 30;
+                const velocity = 10;
+                const vx = Math.cos(angle) * velocity;
+                const vy = Math.sin(angle) * velocity;
+
+                firework.animate([
+                    { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                    { transform: `translate(${vx * 50}px, ${vy * 50}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 1000,
+                    easing: 'ease-out'
+                }).onfinish = () => firework.remove();
+            }
+        }
+
+        setInterval(createHeart, 300);
+
+        document.getElementById('noBtn').addEventListener('mouseover', function(e) {
             if (noCount < 10) {
-                const x = Math.random() * (window.innerWidth - this.offsetWidth);
-                const y = Math.random() * (window.innerHeight - this.offsetHeight);
+                const maxX = window.innerWidth - this.offsetWidth;
+                const maxY = window.innerHeight - this.offsetHeight;
                 this.style.position = 'absolute';
-                this.style.left = x + 'px';
-                this.style.top = y + 'px';
+                this.style.left = Math.random() * maxX + 'px';
+                this.style.top = Math.random() * maxY + 'px';
                 noCount++;
                 loveValue -= 10;
-                updateProgress();
-                this.textContent = messages[Math.floor(Math.random() * messages.length)];
+                document.getElementById('loveProgress').style.width = loveValue + '%';
+                document.getElementById('message').textContent = messages[Math.floor(Math.random() * messages.length)];
             }
         });
 
-        yesBtn.addEventListener('click', function() {
-            alert('太好了！我就知道你也喜欢我 ❤');
-            confetti();
+        document.getElementById('yesBtn').addEventListener('click', function(e) {
+            const x = e.clientX;
+            const y = e.clientY;
+            createFirework(x, y);
+            document.getElementById('message').innerHTML = '❤️ 我就知道你也喜欢我 ❤️<br>我们要永远在一起！';
+            document.getElementById('noBtn').style.display = 'none';
+            this.innerHTML = '永远爱你 ❤️';
+            this.style.transform = 'scale(1.2)';
+            setInterval(() => createFirework(Math.random() * window.innerWidth, Math.random() * window.innerHeight), 500);
         });
-
-        // 简单的心形特效
-        function confetti() {
-            for (let i = 0; i < 50; i++) {
-                const heart = document.createElement('div');
-                heart.innerHTML = '❤';
-                heart.style.position = 'fixed';
-                heart.style.left = Math.random() * 100 + 'vw';
-                heart.style.top = '-20px';
-                heart.style.fontSize = '20px';
-                heart.style.color = '#ff4081';
-                heart.style.animation = 'fall 3s linear';
-                document.body.appendChild(heart);
-                
-                setTimeout(() => heart.remove(), 3000);
-            }
-        }
-
-        // 添加动画样式
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fall {
-                to {
-                    transform: translateY(100vh) rotate(360deg);
-                }
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html> 
